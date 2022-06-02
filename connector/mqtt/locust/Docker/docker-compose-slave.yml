@@ -12,19 +12,26 @@ services:
       # If you only need to generate certificates, activate this volume instead:
       - ../cert:/usr/src/app/cert
       # If you need to change the locust file, activate this volume:
-      # - ../main.py:/usr/src/app/main.py
+      # - ../locust_files/mqtt.py:/usr/src/app/mqtt.py
     environment:
+      LOCUST_FILE: "mqtt.py"
+
       DOJOT_URL: "http://127.0.0.1:8000"
       DOJOT_MQTT_HOST: "127.0.0.1"
       # TODO: differentiate DOJOT_MQTT_PORT and DOJOT_MQTTS_PORT variables
       DOJOT_MQTT_PORT: "8883"
       DOJOT_MQTT_TIMEOUT: "120"
+
+      DOJOT_HTTP_URL: "https://127.0.0.1"
+      DOJOT_HTTP_PORT: "8080"
+      DOJOT_HTTP_TIMEOUT: "120"
+
       DOJOT_ENV: "n"
 
       LOCUST_MASTER_HOST: "locust-master"
 
       REDIS_HOST: "redis"
-      REDIS_PORT: "6379"
+      REDIS_PORT: "6380"
       REDIS_PASSWD: ""
 
       TASK_MIN_TIME: "29.5"

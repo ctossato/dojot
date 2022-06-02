@@ -6,7 +6,7 @@ import unittest
 import redis
 from unittest.mock import patch, MagicMock
 
-from src.mqtt_locust.redis_client import RedisClient
+from src.common.redis_client import RedisClient
 
 
 redis.Redis = MagicMock()
@@ -32,9 +32,9 @@ MOCK_CONFIG = {
 }
 
 
-@patch('src.mqtt_locust.redis_client.redis')
-@patch('src.mqtt_locust.redis_client.Utils')
-@patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+@patch('src.common.redis_client.redis')
+@patch('src.common.redis_client.Utils')
+@patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
 class RedisClientConstructor(unittest.TestCase):
     """
     Tests for RedisClient constructor.
@@ -62,8 +62,8 @@ class RedisClientConstructor(unittest.TestCase):
         mock_utils.create_logger().error.assert_called_once()
 
 
-@patch('src.mqtt_locust.redis_client.redis')
-@patch('src.mqtt_locust.redis_client.Utils')
+@patch('src.common.redis_client.redis')
+@patch('src.common.redis_client.Utils')
 class RedisClientNextDeviceId(unittest.TestCase):
     """
     Tests for next_device_id().
@@ -99,13 +99,13 @@ class RedisClientNextDeviceId(unittest.TestCase):
         mock_utils.create_logger().error.assert_called_once()
 
 
-@patch('src.mqtt_locust.redis_client.redis')
-@patch('src.mqtt_locust.redis_client.Utils')
+@patch('src.common.redis_client.redis')
+@patch('src.common.redis_client.Utils')
 class RedisClientHasToRevoke(unittest.TestCase):
     """
     Tests for has_to_revoke().
     """
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+    @patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
     def test_should_revoke(self, mock_utils, mock_redis):
         """
         Should revoke.
@@ -123,7 +123,7 @@ class RedisClientHasToRevoke(unittest.TestCase):
         self.assertEqual(should_revoke['device_id'], "testID")
         self.assertTrue(should_revoke['should_revoke'])
 
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+    @patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
     def test_should_not_revoke(self, mock_utils, mock_redis):
         """
         Should not revoke because the script returned 0.
@@ -157,7 +157,7 @@ class RedisClientHasToRevoke(unittest.TestCase):
         mock_utils.create_logger().error.assert_not_called()
         self.assertIsNone(should_revoke)
 
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+    @patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
     def test_exception(self, mock_utils, mock_redis):
         """
         Should raise an exception.
@@ -173,13 +173,13 @@ class RedisClientHasToRevoke(unittest.TestCase):
         self.assertIsNone(should_revoke)
 
 
-@patch('src.mqtt_locust.redis_client.redis')
-@patch('src.mqtt_locust.redis_client.Utils')
+@patch('src.common.redis_client.redis')
+@patch('src.common.redis_client.Utils')
 class RedisClientHasToRenew(unittest.TestCase):
     """
     Tests for has_to_renew().
     """
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+    @patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
     def test_should_renew(self, mock_utils, mock_redis):
         """
         Should renew.
@@ -197,7 +197,7 @@ class RedisClientHasToRenew(unittest.TestCase):
         self.assertEqual(should_renew['device_id'], "testID")
         self.assertTrue(should_renew['should_renew'])
 
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+    @patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
     def test_should_not_renew(self, mock_utils, mock_redis):
         """
         Should not renew because the script returned 0.
@@ -223,7 +223,7 @@ class RedisClientHasToRenew(unittest.TestCase):
                 'renew_devices': False
             }
         }
-        patch.dict('src.mqtt_locust.redis_client.CONFIG', mock_config)
+        patch.dict('src.common.redis_client.CONFIG', mock_config)
 
         should_renew = client.has_to_renew()
 
@@ -231,7 +231,7 @@ class RedisClientHasToRenew(unittest.TestCase):
         mock_utils.create_logger().error.assert_not_called()
         self.assertIsNone(should_renew)
 
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+    @patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
     def test_exception(self, mock_utils, mock_redis):
         """
         Should raise an exception.
@@ -247,9 +247,9 @@ class RedisClientHasToRenew(unittest.TestCase):
         self.assertIsNone(should_renew)
 
 
-@patch('src.mqtt_locust.redis_client.redis')
-@patch('src.mqtt_locust.redis_client.DojotAPI')
-@patch.dict('src.mqtt_locust.redis_client.CONFIG', MOCK_CONFIG)
+@patch('src.common.redis_client.redis')
+@patch('src.common.redis_client.DojotAPI')
+@patch.dict('src.common.redis_client.CONFIG', MOCK_CONFIG)
 class RedisClientGetJwt(unittest.TestCase):
     """
     Tests for get_jwt().
@@ -292,8 +292,8 @@ class RedisClientGetJwt(unittest.TestCase):
         self.assertEqual(jwt, "testJWT")
 
 
-@patch('src.mqtt_locust.redis_client.redis')
-@patch('src.mqtt_locust.redis_client.DojotAPI')
+@patch('src.common.redis_client.redis')
+@patch('src.common.redis_client.DojotAPI')
 class RedisClientGetTemplateId(unittest.TestCase):
     """
     Tests for get_template_id().
@@ -335,14 +335,14 @@ class RedisClientGetTemplateId(unittest.TestCase):
         self.assertEqual(template_id, "2")
 
 
-@patch('src.mqtt_locust.redis_client.uuid4')
-@patch('src.mqtt_locust.redis_client.redis')
-@patch('src.mqtt_locust.redis_client.DojotAPI')
+@patch('src.common.redis_client.uuid4')
+@patch('src.common.redis_client.redis')
+@patch('src.common.redis_client.DojotAPI')
 class RedisClientGetDeviceId(unittest.TestCase):
     """
     Tests for get_device_id().
     """
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', {'dojot': {'env': False}})
+    @patch.dict('src.common.redis_client.CONFIG', {'dojot': {'env': False}})
     def test_create_virtual_device_id(self, _mock_api, _mock_redis, mock_uuid):
         """
         Should create a new ID for a virtual device.
@@ -355,7 +355,7 @@ class RedisClientGetDeviceId(unittest.TestCase):
 
         self.assertEqual(device_id, "testUUID")
 
-    @patch.dict('src.mqtt_locust.redis_client.CONFIG', {'dojot': {'env': True}})
+    @patch.dict('src.common.redis_client.CONFIG', {'dojot': {'env': True}})
     def test_get_template_id_from_db(self, mock_api, _mock_redis, mock_uuid):
         """
         Should get the template ID from the database.
@@ -377,3 +377,7 @@ class RedisClientGetDeviceId(unittest.TestCase):
             "CargoContainer_testUUID"
         )
         self.assertEqual(device_id, "4")
+
+
+if __name__ == "__main__":
+    unittest.main()

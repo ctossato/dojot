@@ -7,7 +7,6 @@ import unittest
 from unittest.mock import patch
 from logging import DEBUG, WARNING, ERROR, CRITICAL, INFO
 import random
-import paho.mqtt.client as mqtt
 from src.utils import Utils
 
 
@@ -32,66 +31,6 @@ class TestUtils(unittest.TestCase):
         str_to_bool("other") should return boolean False.
         """
         self.assertFalse(Utils.str_to_bool("other"))
-
-    def test_error_message(self):
-        """
-        error_message() should return the correct names for errors.
-        """
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_AGAIN), "MQTT_ERR_AGAIN")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_SUCCESS), "MQTT_ERR_SUCCESS")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_NOMEM), "MQTT_ERR_NOMEM")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_PROTOCOL), "MQTT_ERR_PROTOCOL")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_INVAL), "MQTT_ERR_INVAL")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_NO_CONN), "MQTT_ERR_NO_CONN")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_CONN_REFUSED), "MQTT_ERR_CONN_REFUSED")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_NOT_FOUND), "MQTT_ERR_NOT_FOUND")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_CONN_LOST), "MQTT_ERR_CONN_LOST")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_TLS), "MQTT_ERR_TLS")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_PAYLOAD_SIZE), "MQTT_ERR_PAYLOAD_SIZE")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_NOT_SUPPORTED), "MQTT_ERR_NOT_SUPPORTED")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_AUTH), "MQTT_ERR_AUTH")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_ACL_DENIED), "MQTT_ERR_ACL_DENIED")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_UNKNOWN), "MQTT_ERR_UNKNOWN")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_ERRNO), "MQTT_ERR_ERRNO")
-        self.assertEqual(Utils.error_message(
-            mqtt.MQTT_ERR_QUEUE_SIZE), "MQTT_ERR_QUEUE_SIZE")
-        self.assertEqual(Utils.error_message(
-            101010), "101010\n")
-
-    def test_conack_error_message(self):
-        """
-        conack_error_message() should return the correct names for errors.
-        """
-        self.assertEqual(Utils.conack_error_message(
-            mqtt.CONNACK_ACCEPTED), "CONNACK_ACCEPTED")
-        self.assertEqual(Utils.conack_error_message(
-            mqtt.CONNACK_REFUSED_PROTOCOL_VERSION), "CONNACK_REFUSED_PROTOCOL_VERSION")
-        self.assertEqual(Utils.conack_error_message(
-            mqtt.CONNACK_REFUSED_IDENTIFIER_REJECTED), "CONNACK_REFUSED_IDENTIFIER_REJECTED")
-        self.assertEqual(Utils.conack_error_message(
-            mqtt.CONNACK_REFUSED_SERVER_UNAVAILABLE), "CONNACK_REFUSED_SERVER_UNAVAILABLE")
-        self.assertEqual(Utils.conack_error_message(
-            mqtt.CONNACK_REFUSED_BAD_USERNAME_PASSWORD), "CONNACK_REFUSED_BAD_USERNAME_PASSWORD")
-        self.assertEqual(Utils.conack_error_message(
-            mqtt.CONNACK_REFUSED_NOT_AUTHORIZED), "CONNACK_REFUSED_NOT_AUTHORIZED")
-        self.assertEqual(Utils.conack_error_message(
-            101010), "101010\n")
 
     def test_log_level(self):
         """"
@@ -241,6 +180,7 @@ class TestUtils(unittest.TestCase):
         mock_formatter.reset_mock()
         mock_stream_handler.reset_mock()
         mock_get_logger.reset_mock()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -224,12 +224,13 @@ class MQTTClientDisconnect(unittest.TestCase):
 @patch('src.mqtt_locust.mqtt_client.json')
 @patch('src.mqtt_locust.mqtt_client.mqtt')
 @patch('src.mqtt_locust.mqtt_client.Utils')
+@patch('src.mqtt_locust.mqtt_client.MqttUtils')
 @patch.dict('src.mqtt_locust.mqtt_client.CONFIG', MOCK_CONFIG)
 class MQTTClientPublish(unittest.TestCase):
     """
     MQTTClient publish() unit tests.
     """
-    def test_publish_success(self, _mock_utils, mock_paho, _mock_json):
+    def test_publish_success(self, _mock_mqtt_utils, _mock_utils, mock_paho, _mock_json):
         """
         Should publish a message successfully
         """
@@ -242,7 +243,7 @@ class MQTTClientPublish(unittest.TestCase):
         keys_len = len(client.pubmmap.keys())
         self.assertGreater(keys_len, 0)
 
-    def test_publish_error(self, mock_utils, mock_paho, _mock_json):
+    def test_publish_error(self, mock_mqtt_utils, mock_utils, mock_paho, _mock_json):
         """
         Should not publish a message successfully
         """
@@ -250,13 +251,13 @@ class MQTTClientPublish(unittest.TestCase):
         client = MQTTClient("123", "987", False, False)
 
         client.publish()
-        mock_utils.error_message.assert_called_once_with(10)
+        mock_mqtt_utils.error_message.assert_called_once_with(10)
         mock_utils.fire_locust_failure.assert_called_once()
 
         keys_len = len(client.pubmmap.keys())
         self.assertEqual(keys_len, 0)
 
-    def test_publish_error2(self, mock_utils, mock_paho, _mock_json):
+    def test_publish_error2(self, mock_mqtt_utils, mock_utils, mock_paho, _mock_json):
         """
         Should not publish a message successfully when the payload is not None or dict
         """
@@ -264,7 +265,7 @@ class MQTTClientPublish(unittest.TestCase):
         client = MQTTClient("123", "987", False, False)
         with self.assertRaises(ValueError):
             client.publish(payload=[1, 2, 3])
-            mock_utils.error_message.assert_called_once_with(10)
+            mock_mqtt_utils.error_message.assert_called_once_with(10)
             mock_utils.fire_locust_failure.assert_called_once()
 
         keys_len = len(client.pubmmap.keys())
@@ -273,12 +274,13 @@ class MQTTClientPublish(unittest.TestCase):
 
 @patch('src.mqtt_locust.mqtt_client.mqtt')
 @patch('src.mqtt_locust.mqtt_client.Utils')
+@patch('src.mqtt_locust.mqtt_client.MqttUtils')
 @patch.dict('src.mqtt_locust.mqtt_client.CONFIG', MOCK_CONFIG)
 class MQTTClientSubscribe(unittest.TestCase):
     """
     MQTTClient subscribe() unit tests.
     """
-    def test_subcribe_success(self, _mock_utils, mock_paho):
+    def test_subcribe_success(self, _mock_mqtt_utils, _mock_utils, mock_paho):
         """
         Should subscribe to the topic successfully.
         """
@@ -290,7 +292,7 @@ class MQTTClientSubscribe(unittest.TestCase):
         keys_len = len(client.submmap.keys())
         self.assertGreater(keys_len, 0)
 
-    def test_subscribe_error(self, mock_utils, mock_paho):
+    def test_subscribe_error(self, mock_mqtt_utils, mock_utils, mock_paho):
         """
         Should not subscribe a message successfully
         """
@@ -298,7 +300,7 @@ class MQTTClientSubscribe(unittest.TestCase):
         client = MQTTClient("123", "987", False, False)
 
         client.subscribe()
-        mock_utils.error_message.assert_called_once_with(10)
+        mock_mqtt_utils.error_message.assert_called_once_with(10)
         mock_utils.fire_locust_failure.assert_called_once()
 
         keys_len = len(client.pubmmap.keys())
@@ -361,12 +363,13 @@ class MQTTClientLocustOnPublish(unittest.TestCase):
 
 @patch('src.mqtt_locust.mqtt_client.mqtt')
 @patch('src.mqtt_locust.mqtt_client.Utils')
+@patch('src.mqtt_locust.mqtt_client.MqttUtils')
 @patch.dict('src.mqtt_locust.mqtt_client.CONFIG', MOCK_CONFIG)
 class MQTTClientLocustOnConnect(unittest.TestCase):
     """
     MQTTClient locust_on_connect() unit tests.
     """
-    def test_locust_on_connect(self, mock_utils, mock_paho):
+    def test_locust_on_connect(self, _mock_mqtt_utils, mock_utils, mock_paho):
         """
         Should fire locust success on connection callback
         """
@@ -376,13 +379,13 @@ class MQTTClientLocustOnConnect(unittest.TestCase):
         client.subscribe.assert_called_once()
         mock_utils.fire_locust_success.assert_called_once()
 
-    def test_locust_on_connect_failure(self, mock_utils, mock_paho):
+    def test_locust_on_connect_failure(self, mock_mqtt_utils, mock_utils, mock_paho):
         """
         Should fire locust failure on connection callback
         """
         client = MQTTClient("123", "987", False, False)
         client.locust_on_connect(client.mqttc, {}, {}, mock_paho.CONNACK_REFUSED_NOT_AUTHORIZED)
-        mock_utils.conack_error_message.assert_called_once()
+        mock_mqtt_utils.conack_error_message.assert_called_once()
         mock_utils.fire_locust_failure.assert_called_once()
 
 

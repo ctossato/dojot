@@ -152,11 +152,12 @@ class TestCertUtils(unittest.TestCase):
         mock_crypto.reset_mock()
         mock_request.reset_mock()
 
+    @patch('src.ejbca.cert_utils.RedisClient')
     @patch('src.ejbca.cert_utils.requests')
     @patch('src.ejbca.cert_utils.crypto')
     @patch('src.ejbca.cert_utils.Thing')
     @patch.dict('src.ejbca.certificate.CONFIG', MOCK_CONFIG)
-    def test_has_been_revoked_false(self, mock_thing, _mock_crypto, mock_request):
+    def test_has_been_revoked_false(self, mock_thing, _mock_crypto, mock_request, _mock_redis):
         """
         has_been_revoked() should return False - Certificate not revoked yet
         """
@@ -177,12 +178,12 @@ class TestCertUtils(unittest.TestCase):
         )
         self.assertFalse(result)
 
-
+    @patch('src.ejbca.cert_utils.RedisClient')
     @patch('src.ejbca.cert_utils.requests')
     @patch('src.ejbca.cert_utils.crypto')
     @patch('src.ejbca.cert_utils.Thing')
     @patch.dict('src.ejbca.certificate.CONFIG', MOCK_CONFIG)
-    def test_has_been_revoked_true(self, mock_thing, _mock_crypto, mock_request):
+    def test_has_been_revoked_true(self, mock_thing, _mock_crypto, mock_request, _mock_redis):
         """
         has_been_revoked() should return True
         """

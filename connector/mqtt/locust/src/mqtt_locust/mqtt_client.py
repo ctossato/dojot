@@ -10,6 +10,7 @@ import paho.mqtt.client as mqtt
 from src.config import CONFIG
 from src.ejbca.cert_utils import CertUtils
 from src.utils import Utils
+from src.mqtt_locust.mqtt_utils import MqttUtils
 
 REQUEST_TYPE = 'mqtt'
 MESSAGE_TYPE_CONNECT = 'connect'
@@ -212,7 +213,7 @@ class MQTTClient:
             }
 
         except Exception as exception:
-            error = Utils.error_message(int(str(exception)))
+            error = MqttUtils.error_message(int(str(exception)))
 
             Utils.fire_locust_failure(
                 request_type=REQUEST_TYPE,
@@ -240,7 +241,7 @@ class MQTTClient:
             }
 
         except Exception as exception:
-            error = Utils.error_message(int(str(exception)))
+            error = MqttUtils.error_message(int(str(exception)))
             logging.error("Error while subscribing: %s", error)
 
             Utils.fire_locust_failure(
@@ -342,7 +343,7 @@ class MQTTClient:
             )
             self.start_time = Utils.seconds_to_milliseconds(time.time())
         else:
-            error = Utils.conack_error_message(result_code)
+            error = MqttUtils.conack_error_message(result_code)
             Utils.fire_locust_failure(
                 request_type=REQUEST_TYPE,
                 name=MESSAGE_TYPE_CONNECT,
@@ -360,7 +361,7 @@ class MQTTClient:
                 request_type=REQUEST_TYPE,
                 name=MESSAGE_TYPE_DISCONNECT,
                 response_time=0,
-                exception=DisconnectError(Utils.error_message(result_code))
+                exception=DisconnectError(MqttUtils.error_message(result_code))
             )
 
         self.reconnect()

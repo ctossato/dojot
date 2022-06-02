@@ -16,11 +16,11 @@ from flask import Blueprint, jsonify
 from src.utils import Utils
 from src.config import CONFIG
 from src.mqtt_locust.mqtt_client import MQTTClient
-from src.mqtt_locust.redis_client import RedisClient
+from src.common.redis_client import RedisClient
 
 
 class MqttLocust(User):
-    """Locust client using MQTT."""
+    """Abstract Locust client using MQTT."""
     abstract = True
 
     def __init__(self, environment):

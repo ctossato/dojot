@@ -5,8 +5,9 @@ from OpenSSL import crypto
 
 from src.config import CONFIG
 from src.utils import Utils
-from src.mqtt_locust.redis_client import RedisClient
+from src.common.redis_client import RedisClient
 from src.dojot.api import DojotAPI
+
 
 class Certificate:
     """
@@ -56,7 +57,7 @@ class Certificate:
         # Remove \n from CSR and return the csr
         return crypto.dump_certificate_request(crypto.FILETYPE_PEM, req).decode("ascii")[:-1]
 
-    def generate_certificate(self) -> str:
+    def generate_certificate(self) -> tuple:
         """
         Generate the certificates.
 

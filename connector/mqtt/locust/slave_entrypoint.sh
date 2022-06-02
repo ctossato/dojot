@@ -7,6 +7,11 @@ readonly DOJOT_MQTT_HOST=${DOJOT_MQTT_HOST:-"127.0.0.1"}
 readonly DOJOT_MQTT_PORT=${DOJOT_MQTT_PORT:-"1883"}
 readonly DOJOT_MQTT_TIMEOUT=${DOJOT_MQTT_TIMEOUT:-"60"}
 
+# HTTP parameters
+readonly DOJOT_HTTP_URL=${DOJOT_HTTP_URL:-"https://127.0.0.1"}
+readonly DOJOT_HTTP_HOST=$(echo "$DOJOT_HTTP_URL" | sed -E 's/https?:\/\///g')
+readonly DOJOT_HTTP_PORT=${DOJOT_HTTP_PORT:-"8080"}
+
 # Locust parameters
 readonly LOCUST_MASTER_HOST=${LOCUST_MASTER_HOST:-"locust-master"}
 
@@ -36,7 +41,7 @@ mkdir -p "${CERT_DIR}${REVOKE_CERT_DIR}"
 
 # Waiting for redis for at most 3 minutes
 START_TIME=$(date +'%s')
-echo "Witing for Redis fully start. Host '${REDIS_HOST}', '${REDIS_PORT}'..."
+echo "Waiting for Redis fully start. Host '${REDIS_HOST}', '${REDIS_PORT}'..."
 echo "Try ping Redis... "
 if [[ -z "$REDIS_PASSWD" ]] ;  then
     PONG=$(redis-cli -h "${REDIS_HOST}" -p "${REDIS_PORT}" ping | grep PONG)
@@ -57,24 +62,31 @@ while [ -z "${PONG}" ]; do
 done
 echo "Redis at host '${REDIS_HOST}', port '${REDIS_PORT}' fully started."
 
-# Waiting for dojot MQTT broker for at most 3 minutes
+# Waiting for dojot broker for at most 3 minutes
 START_TIME=$(date +'%s')
-echo "Waiting for dojot MQTT Broker fully start. Host '${DOJOT_MQTT_HOST}', '${DOJOT_MQTT_PORT}'..."
-echo "Try to connect to dojot MQTT Broker ... "
-RESPONSE=$(nc -zvv "${DOJOT_MQTT_HOST}" "${DOJOT_MQTT_PORT}" 2>&1 | grep succeeded || echo "")
-while [ -z "${RESPONSE}" ]; do
+echo "Waiting for dojot Broker fully start. Host '${DOJOT_MQTT_HOST}', '${DOJOT_MQTT_PORT}' or host '${DOJOT_HTTP_HOST}', '${DOJOT_HTTP_PORT}'..."
+echo "Try to connect to dojot Broker ... "
+RESPONSE_MQTT=$(nc -zvv "${DOJOT_MQTT_HOST}" "${DOJOT_MQTT_PORT}" 2>&1 | grep succeeded || echo "")
+RESPONSE_HTTP=$(nc -zvv "${DOJOT_HTTP_HOST}" "${DOJOT_HTTP_PORT}" 2>&1 | grep succeeded || echo "")
+while [ -z "${RESPONSE_MQTT}" ] && [ -z "${RESPONSE_HTTP}" ]; do
     sleep 3
-    echo "Retry to connect to dojot MQTT broker ... "
-    RESPONSE=$(nc -zvv "${DOJOT_MQTT_HOST}" "${DOJOT_MQTT_PORT}" 2>&1 | grep succeeded || echo "")
+    echo "Retry to connect to dojot broker ... "
+    RESPONSE_MQTT=$(nc -zvv "${DOJOT_MQTT_HOST}" "${DOJOT_MQTT_PORT}" 2>&1 | grep succeeded || echo "")
+    RESPONSE_HTTP=$(nc -zvv "${DOJOT_HTTP_HOST}" "${DOJOT_HTTP_PORT}" 2>&1 | grep succeeded || echo "")
 
     ELAPSED_TIME=$(($(date +'%s') - ${START_TIME}))
-    if [ "${ELAPSED_TIME}" -gt "${DOJOT_MQTT_TIMEOUT}" ]
+    if [ ${ELAPSED_TIME} -gt 180 ]
     then
         echo "dojot MQTT broker is taking too long to fully start. Exiting!"
         exit 3
     fi
 done
-echo "dojot MQTT broker at host '${DOJOT_MQTT_HOST}', port '${DOJOT_MQTT_PORT}' fully started."
+
+echo -en "dojot broker fully started at: "
+if [ -n "${RESPONSE_MQTT}" ]; then echo -n "host ${DOJOT_MQTT_HOST}", port "${DOJOT_MQTT_PORT}";fi
+if [ -n "${RESPONSE_MQTT}" ] && [ -n "${RESPONSE_HTTP}" ]; then echo -n " and ";fi
+if [ -n "${RESPONSE_HTTP}" ]; then echo -n "host ${DOJOT_HTTP_HOST}", port "${DOJOT_HTTP_PORT}";fi
+echo -e .
 
 echo "Starting locust slave node ..."
-locust -f main.py --worker --master-host=${LOCUST_MASTER_HOST}
+locust -f locust_files/"${LOCUST_FILE}" --worker --master-host="${LOCUST_MASTER_HOST}"

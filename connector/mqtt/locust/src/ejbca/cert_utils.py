@@ -8,7 +8,7 @@ from OpenSSL import crypto
 from src.config import CONFIG
 from src.utils import Utils
 from src.ejbca.thing import Thing
-from src.mqtt_locust.redis_client import RedisClient
+from src.common.redis_client import RedisClient
 
 
 LOGGER = Utils.create_logger("cert_utils")
