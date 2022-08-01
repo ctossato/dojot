@@ -266,7 +266,17 @@ class MQTTClient:
                 self.is_revoked = False
                 self.is_renewed = False
             else:
-                self.mqttc.reconnect()
+                try:
+                    self.mqttc.reconnect()
+                except Exception as exception:
+                    logging.error("Error while connecting to the broker: %s", str(exception))
+                    Utils.fire_locust_failure(
+                        request_type=REQUEST_TYPE,
+                        name='connect',
+                        response_time=0,
+                        exception=ConnectError("disconnected")
+                    )
+                    self.mqttc.reconnect()
 
     ###############
     ## Callbacks ##
